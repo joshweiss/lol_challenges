@@ -1,38 +1,55 @@
 import openpyxl
 import string
 import PySimpleGUI as sg
+import random
 
-categories = ['hello']
-charges = []
 
-# Setting up the Gui
-sg.ChangeLookAndFeel('BlueMono')
+def get_challenge_list(sheet, role):
+    col_dict = {'top': 1, 'jungle': 2, 'mid': 3, 'bot': 4, 'support': 5}
+    col = col_dict[role]
+    role_list = []
+    i = 2
+    while sheet.cell(i, col).value:
+        role_list.append(sheet.cell(i, col).value)
+        i += 1
+    return role_list
 
-layout = [
-    [sg.Text('Month'), sg.Combo(
-        ['October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
-         'September'], key='month')],
-    [sg.Text('What is the charge?'), sg.InputText(key='detail', size=(30, 1), do_not_clear=False)],
-    [sg.Text('Cost?', size=(19, 1)), sg.InputText(key='cost', size=(10, 1), do_not_clear=False)],
-    [sg.Text('Type of Expense'), sg.Combo(categories, key='category')],
-    [sg.Submit(), sg.Exit(), sg.Button('Show Monthly Totals')]
-]
 
-window = sg.Window("LOL Challenges").Layout(layout)
+def main():
+    expenses_excel = openpyxl.load_workbook("challenges_roles.xlsx")
+    curr_sheet = expenses_excel['challenges']
+    all_challenges = {
+        'Top': get_challenge_list(curr_sheet, 'top'),
+        'Jungle': get_challenge_list(curr_sheet, 'jungle'),
+        'Mid': get_challenge_list(curr_sheet, 'mid'),
+        'Bot': get_challenge_list(curr_sheet, 'bot'),
+        'Support': get_challenge_list(curr_sheet, 'support'),
+    }
 
-while True:
-    button, values = window.Read()
-    if button is None or button == 'Exit':
-        break
-    # Adding the values from the gui into a list of dictionaries for each time the form was submitted
-    if button == 'Submit':
-        charges.append({'detail': values['detail'], 'cost': float(values['cost']), 'category': values['category'],
-                        'month': values['month']})
-    if button == 'Show Monthly Totals':
-        month_for_show = values['month']
-        show_monthly_totals = True
-        break
+    categories = ['hello']
+    charges = []
 
-window.Close()
+    # Setting up the Gui
+    sg.ChangeLookAndFeel('BlueMono')
 
-print(charges)
+    layout = [
+        [sg.Text('Role'), sg.Combo(
+            ['Top', 'Jungle', 'Mid', 'Bot', 'Support'], key='role')],
+        [sg.Submit(), sg.Exit()]
+    ]
+
+    window = sg.Window("LOL Challenges", layout, size=(250,80), element_justification='c')
+
+    while True:
+        button, values = window.Read()
+        if button is None or button == 'Exit':
+            break
+        # Adding the values from the gui into a list of dictionaries for each time the form was submitted
+        if button == 'Submit':
+            sg.Popup(random.choice(all_challenges[values['role']]))
+
+    window.Close()
+
+    print(charges)
+
+main()
