@@ -1,2 +1,2 @@
-openpyxl
-PySimpleGUI
+openpyxl==3.0.9
+PySimpleGUI==4.55.1
