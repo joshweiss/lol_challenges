@@ -57,8 +57,6 @@ def main():
 
     window.Close()
 
-    print(charges)
-
 
 if __name__ == "__main__":
     main()
