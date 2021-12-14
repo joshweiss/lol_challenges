@@ -1,5 +1,4 @@
 import openpyxl
-import string
 import PySimpleGUI as sg
 import random
 
