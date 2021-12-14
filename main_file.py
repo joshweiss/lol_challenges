@@ -1,7 +1,14 @@
-import openpyxl
-import string
-import PySimpleGUI as sg
+import subprocess
+import re
 import random
+import base64
+
+import willump
+import requests
+import openpyxl
+import PySimpleGUI as sg
+
+from lcu import LCU
 
 
 def get_challenge_list(sheet, role):
@@ -15,7 +22,37 @@ def get_challenge_list(sheet, role):
     return role_list
 
 
+# def get_client_port_and_auth():
+#     out = subprocess.Popen("wmic PROCESS WHERE name='LeagueClientUx.exe' GET commandline",
+#                            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+#     port = re.findall('--app-port=([0-9]*)', str(out))[0]
+#     auth = re.findall(r'--remoting-auth-token=([\w-]*)', str(out))[0]
+#     return port, auth
+#
+# def get_summoner_name():
+#     port, password = get_client_port_and_auth()
+#
+#     url = f'https://127.0.0.1:{port}/lol-summoner/v1/current-summoner'
+#     print(url)
+#     print(password)
+#     auth = base64.b64encode(password.encode('utf-8')).decode('utf-8')
+#     headers = {'Authorization': f'Basic {auth}'}
+#     print(headers)
+#
+#     with requests.Session() as s:
+#         response = requests.get(url, headers=headers, verify='riotgames.pem')
+#     print(response)
+
+
+def get_summoner_name():
+    lcu = LCU()
+    return lcu.summoner_info['internalName']
+
+
 def main():
+    result = get_summoner_name()
+    print(result)
+    return
     expenses_excel = openpyxl.load_workbook("challenges_roles.xlsx")
     curr_sheet = expenses_excel['challenges']
     all_challenges = {
@@ -52,4 +89,6 @@ def main():
 
     print(charges)
 
-main()
+
+if __name__ == "__main__":
+    main()
